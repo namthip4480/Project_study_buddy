@@ -1,30 +1,27 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:study_buddy/main.dart';
+import 'package:study_buddy/screens/login_screen.dart';
+import 'package:study_buddy/screens/home_screen.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  group('Study Buddy KMITL Unit & Widget Tests', () {
+    testWidgets(' LoginScreen UI Render Test', (WidgetTester tester) async {
+      await tester.pumpWidget(const MaterialApp(home: LoginScreen()));
+      expect(find.text('STUDY BUDDY KMITL'), findsOneWidget);
+      expect(find.byType(TextField), findsWidgets);
+    });
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    testWidgets(' HomeScreen Timer and Tab Render Test', (WidgetTester tester) async {
+      await tester.pumpWidget(const MaterialApp(
+        home: HomeScreen(userName: '67030115'),
+      ));
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+      expect(find.text('สวัสดี, 67030115 👋'), findsOneWidget);
+      expect(find.text('หน้าหลัก'), findsOneWidget);
+      expect(find.text('หาเพื่อนติว'), findsOneWidget);
+      expect(find.text('ห้องติวกลุ่ม'), findsOneWidget);
+      expect(find.text('พิกัด KMITL'), findsWidgets);
+      expect(find.text('โปรไฟล์'), findsOneWidget);
+    });
   });
 }
