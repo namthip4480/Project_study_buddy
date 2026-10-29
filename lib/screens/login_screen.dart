@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'home_screen.dart';
+import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -12,19 +15,69 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  bool _isLoading = false;
 
-  void _login() {
+  Future<void> _login() async {
     if (_formKey.currentState!.validate()) {
-      // ดึงชื่อผู้ใช้จากอีเมล (เช่น 65010000@kmitl.ac.th -> 65010000)
-      String username = _emailController.text.split('@')[0];
+      setState(() => _isLoading = true);
 
-      // นำทางไปยังหน้า HomeScreen พร้อมส่งชื่อผู้ใช้ไปใช้งานจริง
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => HomeScreen(userName: username),
-        ),
-      );
+      try {
+        String email = _emailController.text.trim();
+        String password = _passwordController.text.trim();
+
+        // 1. ยืนยันตัวตนด้วย Firebase Auth
+        UserCredential userCredential = await FirebaseAuth.instance
+            .signInWithEmailAndPassword(email: email, password: password);
+
+        User? user = userCredential.user;
+
+        if (user != null) {
+          String username = email.split('@')[0];
+
+          // 2. อัปเดตเวลาเข้าใช้งานลง Firestore
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .set({
+            'email': email,
+            'last_login': FieldValue.serverTimestamp(),
+          }, SetOptions(merge: true));
+
+          if (!mounted) return;
+
+          // 3. ย้ายไปหน้า HomeScreen
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HomeScreen(userName: username),
+            ),
+          );
+        }
+      } on FirebaseAuthException catch (e) {
+        if (!mounted) return;
+        String errorMessage = 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ';
+        if (e.code == 'user-not-found') {
+          errorMessage = 'ไม่พบบัญชีผู้ใช้นี้ กรุณาสมัครสมาชิกก่อน';
+        } else if (e.code == 'wrong-password' || e.code == 'invalid-credential') {
+          errorMessage = 'อีเมลหรือรหัสผ่านไม่ถูกต้อง';
+        }
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      } catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('เกิดข้อผิดพลาด: $e')),
+        );
+      } finally {
+        if (mounted) {
+          setState(() => _isLoading = false);
+        }
+      }
     }
   }
 
@@ -57,7 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 32),
 
-                  // ช่องกรอก Email KMITL
+                  // ช่องกรอก Email
                   TextFormField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
@@ -106,7 +159,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     width: double.infinity,
                     height: 50,
                     child: ElevatedButton(
-                      onPressed: _login,
+                      onPressed: _isLoading ? null : _login,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFFF5722),
                         foregroundColor: Colors.white,
@@ -114,7 +167,30 @@ class _LoginScreenState extends State<LoginScreen> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text('เข้าสู่ระบบ', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      child: _isLoading
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : const Text('เข้าสู่ระบบ',
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // ปุ่มไปยังหน้าสมัครสมาชิก
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const RegisterScreen(),
+                        ),
+                      );
+                    },
+                    child: const Text(
+                      'ยังไม่มีบัญชี? สมัครสมาชิกที่นี่',
+                      style: TextStyle(
+                        color: Color(0xFFFF5722),
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],
