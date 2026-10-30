@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // ✅ แก้ package0 เป็น package
+import 'home_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -13,9 +14,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _usernameController = TextEditingController();
-  final _studentIdController = TextEditingController();
-  final _subjectController = TextEditingController(text: 'Mobile App Development');
+  final _nameController = TextEditingController();
+
+  final List<String> _avatars = ['🎓', '🦊', '🐱', '🐼', '🚀', '👾', '🍕', '🐻'];
+  String _selectedAvatar = '🎓';
 
   final List<String> _faculties = [
     'คณะวิศวกรรมศาสตร์',
@@ -35,13 +37,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
     'วิทยาลัยวิศวกรรมสังคีต',
   ];
   late String _selectedFaculty;
-
   bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _selectedFaculty = _faculties[5]; // ค่าเริ่มต้น: คณะเทคโนโลยีสารสนเทศ
+    _selectedFaculty = _faculties[5];
+  }
+
+  String? _validatePassword(String? value) {
+    if (value == null || value.isEmpty) return 'กรุณากรอกรหัสผ่าน';
+    if (value.length < 8) return 'รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัวอักษร';
+    if (!RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]').hasMatch(value)) {
+      return r'รหัสผ่านต้องมี ตัวพิมพ์ใหญ่, พิมพ์เล็ก, ตัวเลข และอักขระพิเศษ (@$!%*?&)';
+    }
+    return null;
   }
 
   Future<void> _register() async {
@@ -50,6 +60,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       try {
         String email = _emailController.text.trim();
         String password = _passwordController.text.trim();
+        String name = _nameController.text.trim();
 
         UserCredential userCredential = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(email: email, password: password);
@@ -57,39 +68,36 @@ class _RegisterScreenState extends State<RegisterScreen> {
         User? user = userCredential.user;
 
         if (user != null) {
+          await user.updateDisplayName(name);
+
           await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
             'uid': user.uid,
-            'username': _usernameController.text.trim(),
-            'student_id': _studentIdController.text.trim(),
+            'username': name,
             'email': email,
             'faculty': _selectedFaculty,
-            'current_subject': _subjectController.text.trim(),
+            'avatar': _selectedAvatar,
+            'current_subject': 'Mobile App Development',
             'created_at': FieldValue.serverTimestamp(),
-            'last_login': FieldValue.serverTimestamp(),
           });
 
           if (!mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('สมัครสมาชิกสำเร็จ! กรุณาล็อกอิน')),
+          
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => HomeScreen(userName: name)),
+            (route) => false,
           );
-          Navigator.pop(context);
         }
       } on FirebaseAuthException catch (e) {
         if (!mounted) return;
         String message = 'เกิดข้อผิดพลาดในการสมัครสมาชิก';
-        if (e.code == 'email-already-in-use') {
-          message = 'อีเมลนี้ถูกใช้งานในระบบแล้ว';
-        } else if (e.code == 'weak-password') {
-          message = 'รหัสผ่านค่อนข้างคาดเดาง่ายเกินไป';
-        }
+        if (e.code == 'email-already-in-use') message = 'อีเมลนี้ถูกใช้งานในระบบแล้ว';
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(message), backgroundColor: Colors.redAccent),
         );
       } catch (e) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('เกิดข้อผิดพลาด: $e')),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('เกิดข้อผิดพลาด: $e')));
       } finally {
         if (mounted) setState(() => _isLoading = false);
       }
@@ -105,22 +113,44 @@ class _RegisterScreenState extends State<RegisterScreen> {
         child: Form(
           key: _formKey,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextFormField(
-                controller: _usernameController,
-                decoration: const InputDecoration(labelText: 'ชื่อผู้ใช้ (Username)', prefixIcon: Icon(Icons.alternate_email)),
-                validator: (v) => v == null || v.isEmpty ? 'กรุณากรอกชื่อผู้ใช้' : null,
+              const Text('เลือกรูปโปรไฟล์อิโมจิ:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+              const SizedBox(height: 8),
+              SizedBox(
+                height: 50,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: _avatars.length,
+                  itemBuilder: (ctx, idx) {
+                    final em = _avatars[idx];
+                    bool isSel = em == _selectedAvatar;
+                    return GestureDetector(
+                      onTap: () => setState(() => _selectedAvatar = em),
+                      child: Container(
+                        margin: const EdgeInsets.only(right: 10),
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: isSel ? const Color(0xFFFF5722).withOpacity(0.2) : Colors.grey[100],
+                          shape: BoxShape.circle,
+                          border: Border.all(color: isSel ? const Color(0xFFFF5722) : Colors.transparent, width: 2),
+                        ),
+                        child: Text(em, style: const TextStyle(fontSize: 22)),
+                      ),
+                    );
+                  },
+                ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               TextFormField(
-                controller: _studentIdController,
-                decoration: const InputDecoration(labelText: 'รหัสนักศึกษา', prefixIcon: Icon(Icons.badge)),
-                validator: (v) => v == null || v.isEmpty ? 'กรุณากรอกรหัสนักศึกษา' : null,
+                controller: _nameController,
+                decoration: const InputDecoration(labelText: 'ชื่อนักศึกษา (Display Name)', prefixIcon: Icon(Icons.person_outline)),
+                validator: (v) => v == null || v.isEmpty ? 'กรุณากรอกชื่อของคุณ' : null,
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
                 value: _selectedFaculty,
-                decoration: const InputDecoration(labelText: 'คณะ / วิทยาลัย (KMITL)', prefixIcon: Icon(Icons.school)),
+                decoration: const InputDecoration(labelText: 'คณะ / วิทยาลัย (KMITL)', prefixIcon: Icon(Icons.school_outlined)),
                 isExpanded: true,
                 items: _faculties.map((f) => DropdownMenuItem(value: f, child: Text(f, style: const TextStyle(fontSize: 13)))).toList(),
                 onChanged: (val) {
@@ -129,14 +159,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               const SizedBox(height: 12),
               TextFormField(
-                controller: _subjectController,
-                decoration: const InputDecoration(labelText: 'วิชาหลักที่จะเน้นอ่าน', prefixIcon: Icon(Icons.book)),
-                validator: (v) => v == null || v.isEmpty ? 'กรุณากรอกวิชาที่อ่าน' : null,
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
                 controller: _emailController,
-                decoration: const InputDecoration(labelText: 'อีเมลสถาบัน (@kmitl.ac.th)', prefixIcon: Icon(Icons.email)),
+                decoration: const InputDecoration(labelText: 'อีเมลสถาบัน (@kmitl.ac.th)', prefixIcon: Icon(Icons.email_outlined)),
                 validator: (v) {
                   if (v == null || !v.trim().endsWith('@kmitl.ac.th')) {
                     return 'ต้องใช้อีเมล @kmitl.ac.th เท่านั้น';
@@ -148,8 +172,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
               TextFormField(
                 controller: _passwordController,
                 obscureText: true,
-                decoration: const InputDecoration(labelText: 'รหัสผ่าน (6 ตัวขึ้นไป)', prefixIcon: Icon(Icons.lock)),
-                validator: (v) => (v == null || v.length < 6) ? 'รหัสผ่านอย่างน้อย 6 ตัว' : null,
+                decoration: const InputDecoration(
+                  labelText: 'รหัสผ่าน',
+                  hintText: r'8+ ตัวอักษร (A-Z, a-z, 0-9, อักขระพิเศษ)',
+                  prefixIcon: Icon(Icons.lock_outline),
+                ),
+                validator: _validatePassword,
               ),
               const SizedBox(height: 24),
               SizedBox(
@@ -160,7 +188,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFFF5722)),
                   child: _isLoading
                       ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text('ยืนยันการสมัคร', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                      : const Text('ยืนยันการสมัครสมาชิก', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                 ),
               ),
             ],

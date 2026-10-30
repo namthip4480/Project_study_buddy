@@ -22,19 +22,39 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  late TextEditingController _usernameController;
+  late TextEditingController _nameController;
   late TextEditingController _subjectController;
 
   String _email = '';
-  String _faculty = '';
-  String _studentId = '';
+  late String _selectedFaculty;
+  String _avatar = '🎓';
   bool _isLoading = true;
+
+  final List<String> _avatars = ['🎓', '🦊', '🐱', '🐼', '🚀', '👾', '🍕', '🐻'];
+  final List<String> _faculties = [
+    'คณะวิศวกรรมศาสตร์',
+    'คณะสถาปัตยกรรม ศิลปะและการออกแบบ',
+    'คณะครุศาสตร์อุตสาหกรรมและเทคโนโลยี',
+    'คณะเทคโนโลยีการเกษตร',
+    'คณะวิทยาศาสตร์',
+    'คณะเทคโนโลยีสารสนเทศ',
+    'คณะอุตสาหกรรมอาหาร',
+    'คณะบริหารธุรกิจ (KMITL Business School)',
+    'คณะศิลปศาสตร์',
+    'คณะแพทยศาสตร์',
+    'คณะทันตแพทยศาสตร์',
+    'คณะพยาบาลศาสตร์',
+    'คณะเทคโนโลยีนวัตกรรมบูรณาการ',
+    'วิทยาลัยอุตสาหกรรมการบินนานาชาติ (IAAI)',
+    'วิทยาลัยวิศวกรรมสังคีต',
+  ];
 
   @override
   void initState() {
     super.initState();
-    _usernameController = TextEditingController(text: widget.currentName);
+    _nameController = TextEditingController(text: widget.currentName);
     _subjectController = TextEditingController(text: widget.currentSubject);
+    _selectedFaculty = _faculties.contains(widget.currentFaculty) ? widget.currentFaculty : _faculties[5];
     _loadProfileFromFirestore();
   }
 
@@ -46,10 +66,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         if (doc.exists && doc.data() != null) {
           final data = doc.data() as Map<String, dynamic>;
           setState(() {
-            _usernameController.text = data['username']?.toString() ?? data['full_name']?.toString() ?? widget.currentName;
+            _nameController.text = data['username']?.toString() ?? widget.currentName;
             _email = data['email']?.toString() ?? user.email ?? '';
-            _faculty = data['faculty']?.toString() ?? widget.currentFaculty;
-            _studentId = data['student_id']?.toString() ?? '-';
+            String fac = data['faculty']?.toString() ?? widget.currentFaculty;
+            if (_faculties.contains(fac)) _selectedFaculty = fac;
+            _avatar = data['avatar']?.toString() ?? '🎓';
             _subjectController.text = data['current_subject']?.toString() ?? widget.currentSubject;
             _isLoading = false;
           });
@@ -59,32 +80,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
         debugPrint('Error loading profile: $e');
       }
     }
-    setState(() {
-      _email = FirebaseAuth.instance.currentUser?.email ?? '';
-      _faculty = widget.currentFaculty;
-      _isLoading = false;
-    });
+    setState(() => _isLoading = false);
   }
 
-  Future<void> _saveProfileChanges() async {
+  Future<void> _updateProfileData() async {
     final user = FirebaseAuth.instance.currentUser;
-    String newUsername = _usernameController.text.trim();
+    String newName = _nameController.text.trim();
     String newSub = _subjectController.text.trim();
 
-    if (user != null) {
+    if (user != null && newName.isNotEmpty) {
+      await user.updateDisplayName(newName);
       await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
-        'username': newUsername,
+        'username': newName,
+        'faculty': _selectedFaculty,
+        'avatar': _avatar,
         'current_subject': newSub,
         'updated_at': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
+
+      widget.onProfileSaved(newName, _selectedFaculty, newSub);
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('อัปเดตข้อมูลโปรไฟล์เรียบร้อยแล้ว! ✨'), backgroundColor: Colors.green),
+      );
     }
-
-    widget.onProfileSaved(newUsername, _faculty, newSub);
-
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('บันทึกข้อมูลชื่อผู้ใช้และวิชาที่เน้นอ่านสำเร็จ! ✨'), backgroundColor: Colors.green),
-    );
   }
 
   Future<void> _logout() async {
@@ -106,18 +126,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text('👤 โปรไฟล์ของฉัน', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-              IconButton(
-                icon: const Icon(Icons.logout, color: Colors.redAccent),
-                tooltip: 'ออกจากระบบ',
-                onPressed: _logout,
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
+          const Text('👤 โปรไฟล์ส่วนตัว', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 16),
           Center(
             child: Container(
               width: 90,
@@ -127,74 +137,97 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 shape: BoxShape.circle,
                 border: Border.all(color: const Color(0xFFFF5722), width: 2),
               ),
-              child: const Center(child: Text('🎓', style: TextStyle(fontSize: 48))),
+              child: Center(child: Text(_avatar, style: const TextStyle(fontSize: 48))),
             ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 12),
 
-          // ช่องตั้งค่าชื่อผู้ใช้ (Username)
+          // ถาดเลือกรูปโปรไฟล์อิโมจิ
+          SizedBox(
+            height: 44,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: _avatars.length,
+              itemBuilder: (ctx, idx) {
+                final em = _avatars[idx];
+                bool isSel = em == _avatar;
+                return GestureDetector(
+                  onTap: () => setState(() => _avatar = em),
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: isSel ? const Color(0xFFFF5722).withOpacity(0.2) : Colors.grey[100],
+                      shape: BoxShape.circle,
+                      border: Border.all(color: isSel ? const Color(0xFFFF5722) : Colors.transparent),
+                    ),
+                    child: Text(em, style: const TextStyle(fontSize: 20)),
+                  ),
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 20),
+
           TextField(
-            controller: _usernameController,
+            controller: _nameController,
             decoration: InputDecoration(
-              labelText: 'ชื่อผู้ใช้ (Username)',
-              hintText: 'ตั้งชื่อผู้ใช้สำหรับใช้แชตและแสดงในแอป',
-              prefixIcon: const Icon(Icons.alternate_email, color: Color(0xFFFF5722)),
+              labelText: 'ชื่อนักศึกษา (Display Name)',
+              prefixIcon: const Icon(Icons.person_outline, color: Color(0xFFFF5722)),
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
 
-          // ช่องตั้งค่าวิชาที่ต้องการเน้นอ่าน
+          DropdownButtonFormField<String>(
+            value: _selectedFaculty,
+            decoration: InputDecoration(
+              labelText: 'คณะ / วิทยาลัย (KMITL)',
+              prefixIcon: const Icon(Icons.school_outlined, color: Color(0xFFFF5722)),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            isExpanded: true,
+            items: _faculties.map((f) => DropdownMenuItem(value: f, child: Text(f, style: const TextStyle(fontSize: 13)))).toList(),
+            onChanged: (val) {
+              if (val != null) setState(() => _selectedFaculty = val);
+            },
+          ),
+          const SizedBox(height: 14),
+
           TextField(
             controller: _subjectController,
             decoration: InputDecoration(
-              labelText: 'วิชาหลักที่ต้องการอ่านในขณะนี้',
+              labelText: 'วิชาหลักที่กำลังเน้นอ่าน',
               prefixIcon: const Icon(Icons.menu_book_outlined, color: Color(0xFFFF5722)),
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             ),
           ),
           const SizedBox(height: 20),
 
-          // ข้อมูลสถาบันและคณะ Read-only (อิงจากลงทะเบียน)
           Card(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             child: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  ListTile(
-                    leading: const Icon(Icons.badge, color: Color(0xFFFF5722)),
-                    title: const Text('รหัสนักศึกษา', style: TextStyle(fontSize: 12, color: Colors.black54)),
-                    subtitle: Text(_studentId, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
-                  ),
-                  const Divider(),
-                  ListTile(
-                    leading: const Icon(Icons.school, color: Color(0xFFFF5722)),
-                    title: const Text('สถาบัน / คณะ', style: TextStyle(fontSize: 12, color: Colors.black54)),
-                    subtitle: Text('สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง\n$_faculty', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
-                  ),
-                  const Divider(),
-                  ListTile(
-                    leading: const Icon(Icons.email, color: Color(0xFFFF5722)),
-                    title: const Text('อีเมลสถาบัน', style: TextStyle(fontSize: 12, color: Colors.black54)),
-                    subtitle: Text(_email, style: const TextStyle(fontSize: 14)),
-                  ),
-                ],
+              child: ListTile(
+                leading: const Icon(Icons.email_outlined, color: Color(0xFFFF5722)),
+                title: const Text('อีเมลสถาบัน', style: TextStyle(fontSize: 12, color: Colors.black54)),
+                subtitle: Text(_email, style: const TextStyle(fontSize: 14)),
               ),
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 24),
 
           SizedBox(
             width: double.infinity,
             height: 48,
             child: ElevatedButton(
-              onPressed: _saveProfileChanges,
+              onPressed: _updateProfileData,
               style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFFF5722)),
-              child: const Text('บันทึกข้อมูลโปรไฟล์', style: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold)),
+              child: const Text('บันทึกการเปลี่ยนแปลง', style: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold)),
             ),
           ),
           const SizedBox(height: 12),
+
           SizedBox(
             width: double.infinity,
             height: 48,

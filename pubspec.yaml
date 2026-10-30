@@ -15,6 +15,7 @@ dependencies:
   firebase_core: ^3.0.0
   cloud_firestore: ^5.6.12
   firebase_auth: ^5.0.0
+  google_sign_in: ^6.2.1
   sqflite: ^2.4.5
   path: ^1.9.1
   hive: ^2.2.3
@@ -25,6 +26,16 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
+  flutter_launcher_icons: ^0.13.1
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/icon/
+
+# ตั้งค่าสร้าง App Icon บนแท็บเล็ตและมือถือ
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/app_icon.png"
+  min_sdk_android: 21

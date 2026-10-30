@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'home_screen.dart';
 import 'register_screen.dart';
 
@@ -14,182 +15,211 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
 
   Future<void> _login() async {
-    if (_formKey.currentState!.validate()) {
-      setState(() => _isLoading = true);
+    String email = _emailController.text.trim();
+    String password = _passwordController.text.trim();
 
-      try {
-        String email = _emailController.text.trim();
-        String password = _passwordController.text.trim();
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('กรุณากรอกอีเมลและรหัสผ่าน')),
+      );
+      return;
+    }
 
-        // 1. ยืนยันตัวตนด้วย Firebase Auth
-        UserCredential userCredential = await FirebaseAuth.instance
-            .signInWithEmailAndPassword(email: email, password: password);
+    setState(() => _isLoading = true);
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
 
-        User? user = userCredential.user;
+      User? user = userCredential.user;
 
-        if (user != null) {
-          String username = email.split('@')[0];
-
-          // 2. อัปเดตเวลาเข้าใช้งานลง Firestore
-          await FirebaseFirestore.instance
-              .collection('users')
-              .doc(user.uid)
-              .set({
+      if (user != null) {
+        final userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+        if (!userDoc.exists) {
+          await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+            'uid': user.uid,
+            'username': user.displayName ?? email.split('@')[0],
             'email': email,
-            'last_login': FieldValue.serverTimestamp(),
-          }, SetOptions(merge: true));
-
-          if (!mounted) return;
-
-          // 3. ย้ายไปหน้า HomeScreen
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => HomeScreen(userName: username),
-            ),
-          );
+            'faculty': 'คณะเทคโนโลยีสารสนเทศ',
+            'avatar': '🎓',
+            'current_subject': 'Mobile App Development',
+            'created_at': FieldValue.serverTimestamp(),
+          });
         }
-      } on FirebaseAuthException catch (e) {
+
         if (!mounted) return;
-        String errorMessage = 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ';
-        if (e.code == 'user-not-found') {
-          errorMessage = 'ไม่พบบัญชีผู้ใช้นี้ กรุณาสมัครสมาชิกก่อน';
-        } else if (e.code == 'wrong-password' || e.code == 'invalid-credential') {
-          errorMessage = 'อีเมลหรือรหัสผ่านไม่ถูกต้อง';
+        String nameToShow = user.displayName ?? userDoc.data()?['username'] ?? email.split('@')[0];
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomeScreen(userName: nameToShow)),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+      String message = 'การเข้าสู่ระบบล้มเหลว';
+      if (e.code == 'user-not-found') message = 'ไม่พบผู้ใช้งานด้วยอีเมลนี้';
+      if (e.code == 'wrong-password') message = 'รหัสผ่านไม่ถูกต้อง';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message), backgroundColor: Colors.redAccent),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _signInWithGoogle() async {
+    setState(() => _isLoading = true);
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      if (googleUser == null) {
+        setState(() => _isLoading = false);
+        return;
+      }
+
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+      User? user = userCredential.user;
+
+      if (user != null) {
+        final userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+        if (!userDoc.exists) {
+          await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+            'uid': user.uid,
+            'username': user.displayName ?? user.email!.split('@')[0],
+            'email': user.email,
+            'faculty': 'คณะเทคโนโลยีสารสนเทศ',
+            'avatar': '🎓',
+            'current_subject': 'Mobile App Development',
+            'created_at': FieldValue.serverTimestamp(),
+          });
         }
-        
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(errorMessage),
-            backgroundColor: Colors.redAccent,
+
+        if (!mounted) return;
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomeScreen(userName: user.displayName ?? 'นักศึกษา'),
           ),
         );
-      } catch (e) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('เกิดข้อผิดพลาด: $e')),
-        );
-      } finally {
-        if (mounted) {
-          setState(() => _isLoading = false);
-        }
       }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('เกิดข้อผิดพลาดในการล็อกอินด้วย Google: $e'), backgroundColor: Colors.redAccent),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFAF2ED),
+      backgroundColor: Colors.white,
       body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
-            child: Form(
-              key: _formKey,
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Center(
+            child: SingleChildScrollView(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.school, size: 80, color: Color(0xFFFF5722)),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'STUDY BUDDY KMITL',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFFFF5722),
-                    ),
-                  ),
-                  const Text(
-                    'เข้าสู่ระบบด้วยอีเมลสถาบัน',
-                    style: TextStyle(color: Colors.black54),
-                  ),
+                  const Text('🎓', style: TextStyle(fontSize: 64)),
+                  const SizedBox(height: 12),
+                  const Text('STUDY BUDDY KMITL', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFFFF5722))),
+                  const Text('แอปค้นหาเพื่อนอ่านหนังสือ ลาดกระบัง', style: TextStyle(fontSize: 12, color: Colors.black45)),
                   const SizedBox(height: 32),
-
-                  // ช่องกรอก Email
-                  TextFormField(
+                  
+                  TextField(
                     controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
                       labelText: 'อีเมลสถาบัน (@kmitl.ac.th)',
-                      hintText: '65xxxxxx@kmitl.ac.th',
                       prefixIcon: const Icon(Icons.email_outlined),
-                      filled: true,
-                      fillColor: Colors.white,
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'กรุณากรอกอีเมล';
-                      }
-                      if (!value.trim().endsWith('@kmitl.ac.th')) {
-                        return 'ต้องใช้อีเมลสถาบันที่ลงท้ายด้วย @kmitl.ac.th เท่านั้น';
-                      }
-                      return null;
-                    },
                   ),
                   const SizedBox(height: 16),
-
-                  // ช่องกรอก Password
-                  TextFormField(
+                  
+                  TextField(
                     controller: _passwordController,
                     obscureText: true,
                     decoration: InputDecoration(
                       labelText: 'รหัสผ่าน',
                       prefixIcon: const Icon(Icons.lock_outline),
-                      filled: true,
-                      fillColor: Colors.white,
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                     ),
-                    validator: (value) {
-                      if (value == null || value.length < 6) {
-                        return 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร';
-                      }
-                      return null;
-                    },
                   ),
-                  const SizedBox(height: 24),
-
-                  // ปุ่มเข้าสู่ระบบ
+                  const SizedBox(height: 16),
+                  
                   SizedBox(
                     width: double.infinity,
-                    height: 50,
+                    height: 48,
                     child: ElevatedButton(
                       onPressed: _isLoading ? null : _login,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFFF5722),
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
                       child: _isLoading
                           ? const CircularProgressIndicator(color: Colors.white)
-                          : const Text('เข้าสู่ระบบ',
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                          : const Text('เข้าสู่ระบบ', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
                     ),
                   ),
                   const SizedBox(height: 16),
 
-                  // ปุ่มไปยังหน้าสมัครสมาชิก
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const RegisterScreen(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center, // ✅ แก้ซ้ำออกเรียบร้อย
+                    children: [
+                      const Text('ยังไม่มีบัญชีผู้ใช้งาน? ', style: TextStyle(fontSize: 13, color: Colors.black54)),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const RegisterScreen()),
+                          );
+                        },
+                        child: const Text(
+                          'สมัครสมาชิก',
+                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFFFF5722)),
                         ),
-                      );
-                    },
-                    child: const Text(
-                      'ยังไม่มีบัญชี? สมัครสมาชิกที่นี่',
-                      style: TextStyle(
-                        color: Color(0xFFFF5722),
-                        fontWeight: FontWeight.bold,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+
+                  Row(
+                    children: const [
+                      Expanded(child: Divider()),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 12),
+                        child: Text('หรือเข้าสู่ระบบด้วย', style: TextStyle(fontSize: 12, color: Colors.black45)),
+                      ),
+                      Expanded(child: Divider()),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+
+                  SizedBox(
+                    width: double.infinity,
+                    height: 48,
+                    child: OutlinedButton.icon(
+                      onPressed: _isLoading ? null : _signInWithGoogle,
+                      icon: const Icon(Icons.g_mobiledata, color: Colors.red, size: 32),
+                      label: const Text(
+                        'เข้าสู่ระบบด้วย Google KMITL',
+                        style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold, fontSize: 14),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        side: const BorderSide(color: Color(0xFFE0E0E0)),
                       ),
                     ),
                   ),
