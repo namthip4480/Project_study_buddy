@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // ✅ แก้ package0 เป็น package
-import 'home_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:study_buddy/screens/home_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -105,8 +105,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
       } on FirebaseAuthException catch (e) {
         if (!mounted) return;
         String message = 'เกิดข้อผิดพลาดในการสมัครสมาชิก';
-        if (e.code == 'email-already-in-use')
+        if (e.code == 'email-already-in-use') {
           message = 'อีเมลนี้ถูกใช้งานในระบบแล้ว';
+        }
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(message), backgroundColor: Colors.redAccent),
         );
