@@ -1,4 +1,4 @@
-﻿import 'dart0:async';
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
@@ -18,8 +18,8 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
   late String _displayName;
-  String _userAvatar = '🎓';
-  String _currentFaculty = 'คณะเทคโนโลยีสารสนเทศ';
+  String _userAvatar = '??';
+  String _currentFaculty = '????????????????????';
   String _currentSubject = 'Mobile App Development';
 
   bool _isStudying = false;
@@ -45,8 +45,8 @@ class _HomeScreenState extends State<HomeScreen> {
           final data = doc.data() as Map<String, dynamic>;
           setState(() {
             _displayName = data['username']?.toString() ?? widget.userName;
-            _userAvatar = data['avatar']?.toString() ?? '🎓';
-            _currentFaculty = data['faculty']?.toString() ?? 'คณะเทคโนโลยีสารสนเทศ';
+            _userAvatar = data['avatar']?.toString() ?? '??';
+            _currentFaculty = data['faculty']?.toString() ?? '????????????????????';
             _currentSubject = data['current_subject']?.toString() ?? 'Mobile App Development';
           });
         }
@@ -95,13 +95,13 @@ class _HomeScreenState extends State<HomeScreen> {
           context: context,
           builder: (ctx) => AlertDialog(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            title: const Text('🎉 อ่านหนังสือสำเร็จ!'),
-            content: Text('คุณอ่านหนังสือวิชา $_currentSubject ครบกำหนด $_targetMinutes นาทีเรียบร้อยแล้ว เก่งมากครับ! ✨'),
+            title: const Text('?? ?????????????????!'),
+            content: Text('?????????????????? $_currentSubject ???????? $_targetMinutes ????????????????? ???????????! ?'),
             actions: [
               ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFFF5722)),
                 onPressed: () => Navigator.pop(ctx),
-                child: const Text('รับทราบ', style: TextStyle(color: Colors.white)),
+                child: const Text('???????', style: TextStyle(color: Colors.white)),
               ),
             ],
           ),
@@ -129,13 +129,13 @@ class _HomeScreenState extends State<HomeScreen> {
           context: context,
           builder: (ctx) => AlertDialog(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            title: const Text('🎉 อ่านหนังสือสำเร็จ!'),
-            content: Text('คุณอ่านหนังสือวิชา $_currentSubject ครบกำหนด $_targetMinutes นาทีเรียบร้อยแล้ว เก่งมากครับ! ✨'),
+            title: const Text('?? ?????????????????!'),
+            content: Text('?????????????????? $_currentSubject ???????? $_targetMinutes ????????????????? ???????????! ?'),
             actions: [
               ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFFF5722)),
                 onPressed: () => Navigator.pop(ctx),
-                child: const Text('รับทราบ', style: TextStyle(color: Colors.white)),
+                child: const Text('???????', style: TextStyle(color: Colors.white)),
               ),
             ],
           ),
@@ -258,11 +258,11 @@ class _HomeScreenState extends State<HomeScreen> {
           unselectedLabelStyle: const TextStyle(fontSize: 11),
           elevation: 0,
           items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.grid_view_rounded), label: 'หน้าหลัก'),
-            BottomNavigationBarItem(icon: Icon(Icons.people_alt_outlined), activeIcon: Icon(Icons.people_alt), label: 'หาเพื่อนติว'),
-            BottomNavigationBarItem(icon: Icon(Icons.groups_outlined), activeIcon: Icon(Icons.groups), label: 'ห้องติวกลุ่ม'),
-            BottomNavigationBarItem(icon: Icon(Icons.map_outlined), activeIcon: Icon(Icons.map), label: 'พิกัด KMITL'),
-            BottomNavigationBarItem(icon: Icon(Icons.person_outline), activeIcon: Icon(Icons.person), label: 'โปรไฟล์'),
+            BottomNavigationBarItem(icon: Icon(Icons.grid_view_rounded), label: '????????'),
+            BottomNavigationBarItem(icon: Icon(Icons.people_alt_outlined), activeIcon: Icon(Icons.people_alt), label: '???????????'),
+            BottomNavigationBarItem(icon: Icon(Icons.groups_outlined), activeIcon: Icon(Icons.groups), label: '????????????'),
+            BottomNavigationBarItem(icon: Icon(Icons.map_outlined), activeIcon: Icon(Icons.map), label: '????? KMITL'),
+            BottomNavigationBarItem(icon: Icon(Icons.person_outline), activeIcon: Icon(Icons.person), label: '???????'),
           ],
         ),
       ),
@@ -336,7 +336,7 @@ class HomeTab extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text('STUDY BUDDY KMITL', style: TextStyle(color: Color(0xFFFF5722), fontWeight: FontWeight.bold, fontSize: 11, letterSpacing: 1.1)),
-                          Text('สวัสดี, $displayName 👋', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF2C2C2C)), overflow: TextOverflow.ellipsis),
+                          Text('??????, $displayName ??', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF2C2C2C)), overflow: TextOverflow.ellipsis),
                           Text(currentFaculty, style: const TextStyle(fontSize: 11, color: Colors.black54), overflow: TextOverflow.ellipsis),
                         ],
                       ),
@@ -363,21 +363,21 @@ class HomeTab extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('เป้าหมายวิชาที่เน้นอ่านในขณะนี้:', style: TextStyle(fontSize: 11, color: Colors.black54)),
+                      const Text('???????????????????????????????:', style: TextStyle(fontSize: 11, color: Colors.black54)),
                       Text(currentSubject, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFFFF5722))),
                     ],
                   ),
                 ),
                 TextButton(
                   onPressed: () => onNavigateTab(4),
-                  child: const Text('เปลี่ยนวิชา', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                  child: const Text('???????????', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
                 ),
               ],
             ),
           ),
           const SizedBox(height: 20),
 
-          // ตัวจับเวลา
+          // ??????????
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
@@ -402,13 +402,13 @@ class HomeTab extends StatelessWidget {
                           Icon(Icons.circle, size: 8, color: isStudying ? Colors.green : Colors.orange),
                           const SizedBox(width: 6),
                           Text(
-                            isStudying ? 'กำลังจับเวลาอ่านหนังสือ' : 'พร้อมเริ่มอ่านหนังสือหรือยัง?',
+                            isStudying ? '???????????????????????' : '?????????????????????????????',
                             style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: isStudying ? Colors.green[800] : Colors.orange[800]),
                           ),
                         ],
                       ),
                     ),
-                    Text('เป้าหมาย $targetMinutes นาที', style: const TextStyle(fontSize: 11, color: Colors.black45)),
+                    Text('???????? $targetMinutes ????', style: const TextStyle(fontSize: 11, color: Colors.black45)),
                   ],
                 ),
                 const SizedBox(height: 16),
@@ -452,7 +452,7 @@ class HomeTab extends StatelessWidget {
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                         ),
                         child: Text(
-                          isStudying ? 'พักชั่วคราว' : (hasStarted ? 'อ่านต่อ' : 'เริ่มอ่านเลย! 🔥'),
+                          isStudying ? '???????????' : (hasStarted ? '???????' : '????????????! ??'),
                           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.white),
                         ),
                       ),
@@ -461,7 +461,7 @@ class HomeTab extends StatelessWidget {
                       const SizedBox(width: 10),
                       IconButton(
                         onPressed: onStop,
-                        tooltip: 'ยกเลิก / เริ่มนับใหม่',
+                        tooltip: '?????? / ????????????',
                         icon: const Icon(Icons.stop_circle_outlined, color: Colors.red, size: 36),
                       ),
                     ]
@@ -472,7 +472,7 @@ class HomeTab extends StatelessWidget {
           ),
           const SizedBox(height: 24),
 
-          const Text('ฟีเจอร์ยอดฮิต ⚡', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF2C2C2C))),
+          const Text('????????????? ?', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF2C2C2C))),
           const SizedBox(height: 12),
           GridView.count(
             shrinkWrap: true,
@@ -482,10 +482,10 @@ class HomeTab extends StatelessWidget {
             mainAxisSpacing: 12,
             childAspectRatio: 1.5,
             children: [
-              _buildFeatureCard('หา Buddy ติว', 'แมตช์เพื่อนอ่านวิชาเดียวกัน', Icons.person_search_rounded, const Color(0xFFFFE0B2), () => onNavigateTab(1)),
-              _buildFeatureCard('Study Room', 'เข้าร่วมกลุ่มอ่านหนังสือ', Icons.groups_rounded, const Color(0xFFC8E6C9), () => onNavigateTab(2)),
-              _buildFeatureCard('พิกัด KMITL', 'เช็คสถานที่และสิ่งอำนวยความสะดวก', Icons.pin_drop_rounded, const Color(0xFFBBDEFB), () => onNavigateTab(3)),
-              _buildFeatureCard('แก้ไขโปรไฟล์', 'ตั้งค่าคณะ/วิชาที่อ่าน', Icons.badge_rounded, const Color(0xFFE1BEE7), () => onNavigateTab(4)),
+              _buildFeatureCard('?? Buddy ???', '???????????????????????????', Icons.person_search_rounded, const Color(0xFFFFE0B2), () => onNavigateTab(1)),
+              _buildFeatureCard('Study Room', '????????????????????????', Icons.groups_rounded, const Color(0xFFC8E6C9), () => onNavigateTab(2)),
+              _buildFeatureCard('????? KMITL', '????????????????????????????????', Icons.pin_drop_rounded, const Color(0xFFBBDEFB), () => onNavigateTab(3)),
+              _buildFeatureCard('????????????', '??????????/???????????', Icons.badge_rounded, const Color(0xFFE1BEE7), () => onNavigateTab(4)),
             ],
           ),
           const SizedBox(height: 16),
@@ -528,7 +528,7 @@ class HomeTab extends StatelessWidget {
                           children: [
                             Row(
                               children: [
-                                const Text('AI ผู้ช่วยติวหนังสือ', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
+                                const Text('AI ?????????????????', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
                                 const SizedBox(width: 8),
                                 Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
@@ -538,7 +538,7 @@ class HomeTab extends StatelessWidget {
                               ],
                             ),
                             const SizedBox(height: 4),
-                            const Text('วางแผนการอ่าน & สรุปบทเรียนด้วย Gemini AI', style: TextStyle(color: Colors.white70, fontSize: 11)),
+                            const Text('????????????? & ??????????????? Gemini AI', style: TextStyle(color: Colors.white70, fontSize: 11)),
                           ],
                         ),
                       ),
@@ -584,7 +584,7 @@ class HomeTab extends StatelessWidget {
   }
 }
 
-// ---------------- Modal ตั้งเวลา ----------------
+// ---------------- Modal ???????? ----------------
 class StartStudyModal extends StatefulWidget {
   final String currentSubject;
   final Function(String subject, int mins) onStart;
@@ -616,7 +616,7 @@ class _StartStudyModalState extends State<StartStudyModal> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('เริ่มจับเวลาอ่านหนังสือ 🔥', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const Text('??????????????????????? ??', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               IconButton(
                 icon: const Icon(Icons.close),
                 onPressed: () => Navigator.pop(context),
@@ -626,13 +626,13 @@ class _StartStudyModalState extends State<StartStudyModal> {
           const SizedBox(height: 14),
           TextField(
             controller: _subjectController,
-            decoration: const InputDecoration(labelText: 'วิชาที่จะอ่าน', border: OutlineInputBorder()),
+            decoration: const InputDecoration(labelText: '?????????????', border: OutlineInputBorder()),
           ),
           const SizedBox(height: 12),
           TextField(
             controller: _minsController,
             keyboardType: TextInputType.number,
-            decoration: const InputDecoration(labelText: 'ตั้งเป้าหมายกี่นาที?', border: OutlineInputBorder()),
+            decoration: const InputDecoration(labelText: '????????????????????', border: OutlineInputBorder()),
           ),
           const SizedBox(height: 18),
           SizedBox(
@@ -646,7 +646,7 @@ class _StartStudyModalState extends State<StartStudyModal> {
                 widget.onStart(sub, mins);
                 Navigator.pop(context);
               },
-              child: const Text('ลุยเลย!', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              child: const Text('??????!', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
             ),
           ),
         ],
@@ -687,10 +687,10 @@ class _AIAssistantModalState extends State<AIAssistantModal> {
 
     try {
       final prompt = promptType == 'plan'
-          ? 'ช่วยจัดตารางและแผนการอ่านหนังสือสอบวิชา $subject สำหรับนักศึกษามหาวิทยาลัยแบบสั้นกระชับ เป็นข้อๆ'
-          : 'ช่วยสรุปเทคนิคการอ่านและจดจำเนื้อหาวิชา $subject ให้สอบผ่านได้เกรด A แบบสั้นกระชับ เป็นข้อๆ';
+          ? '??????????????????????????????????????? $subject ?????????????????????????????????????? ????????'
+          : '??????????????????????????????????????? $subject ????????????????? A ????????????? ????????';
 
-      // พยายามต่อ API จริงโดยวนลูปชื่อโมเดลล่าสุด
+      // ????????? API ???????????????????????????
       final candidateModels = ['gemini-1.5-flash', 'gemini-1.5-flash-latest', 'gemini-2.0-flash'];
       String? resultText;
 
@@ -703,7 +703,7 @@ class _AIAssistantModalState extends State<AIAssistantModal> {
             break;
           }
         } catch (_) {
-          // หากรุ่นนั้นมีปัญหา ลูปจะไปลองรุ่นถัดไป
+          // ?????????????????? ???????????????????
         }
       }
 
@@ -712,7 +712,7 @@ class _AIAssistantModalState extends State<AIAssistantModal> {
           _aiResponseText = resultText!;
         });
       } else {
-        // หากยิง API ไม่สำเร็จทุกรุ่น สลับไปใช้ Dynamic Smart Fallback Response ทันที
+        // ?????? API ???????????????? ????????? Dynamic Smart Fallback Response ?????
         _applyFallbackResponse(promptType, subject);
       }
     } catch (e) {
@@ -725,55 +725,55 @@ class _AIAssistantModalState extends State<AIAssistantModal> {
   }
 
   void _applyFallbackResponse(String promptType, String subject) {
-    final subjectName = subject.isEmpty ? 'ทั่วไป' : subject;
+    final subjectName = subject.isEmpty ? '??????' : subject;
     final lowerSub = subjectName.toLowerCase();
 
     setState(() {
       if (promptType == 'plan') {
         if (lowerSub.contains('code') || lowerSub.contains('app') || lowerSub.contains('flutter') || lowerSub.contains('java') || lowerSub.contains('python') || lowerSub.contains('com')) {
           _aiResponseText = '''
-🎓 แผนการอ่าน & ซ้อมทำโจทย์วิชา $subjectName:
-1. ทบทวน Syntax และโครงสร้างฟังก์ชันหลัก (30 นาที)
-2. ไล่แกะโค้ด Example และทดลอง Debug เอง (45 นาที)
-3. เขียนโปรแกรมแก้ โจทย์ข้อสอบเก่า / Lab Test (1 ชม.)
-4. สรุป Logic และ Algorithm ไว้ทวนก่อนเข้าห้องสอบ''';
-        } else if (lowerSub.contains('math') || lowerSub.contains('calc') || lowerSub.contains('physic') || lowerSub.contains('คำนวณ')) {
+?? ?????????? & ??????????????? $subjectName:
+1. ????? Syntax ???????????????????????? (30 ????)
+2. ?????????? Example ???????? Debug ??? (45 ????)
+3. ??????????????? ??????????????? / Lab Test (1 ??.)
+4. ???? Logic ??? Algorithm ?????????????????????''';
+        } else if (lowerSub.contains('math') || lowerSub.contains('calc') || lowerSub.contains('physic') || lowerSub.contains('?????')) {
           _aiResponseText = '''
-🎓 แผนการอ่าน & ตะลุยโจทย์วิชา $subjectName:
-1. จดสรุปสูตรสำคัญและเงื่อนไขการใช้สูตร (20 นาที)
-2. ทำแบบฝึกหัดตามตัวอย่างในสไลด์อาจารย์ (40 นาที)
-3. ตะลุยทำโจทย์ข้อสอบเก่าย้อนหลัง 3 ปี (1.5 ชม.)
-4. รีเช็กจุดที่เคยคิดเลขผิดบ่อยๆ ใส่ Note ไว้''';
+?? ?????????? & ?????????????? $subjectName:
+1. ???????????????????????????????????? (20 ????)
+2. ???????????????????????????????????? (40 ????)
+3. ?????????????????????????????? 3 ?? (1.5 ??.)
+4. ????????????????????????????? ??? Note ???''';
         } else {
           _aiResponseText = '''
-🎓 แผนการอ่านหนังสือวิชา $subjectName:
-1. อ่านทบทวนสไลด์อาจารย์เน้นหัวข้อไฮไลต์ (30 นาที)
-2. สรุป Keyword หลักและเขียน Mind Map ภาพรวม (45 นาที)
-3. ฝึกตอบคำถามเก็งข้อสอบย้อนหลัง (1 ชม.)
-4. ทบทวนจุดที่ไม่มั่นใจกับเพื่อนใน Study Buddy''';
+?? ????????????????????? $subjectName:
+1. ????????????????????????????????????? (30 ????)
+2. ???? Keyword ???????????? Mind Map ?????? (45 ????)
+3. ????????????????????????????? (1 ??.)
+4. ??????????????????????????????? Study Buddy''';
         }
       } else {
         if (lowerSub.contains('code') || lowerSub.contains('app') || lowerSub.contains('flutter') || lowerSub.contains('java') || lowerSub.contains('python') || lowerSub.contains('com')) {
           _aiResponseText = '''
-💡 เทคนิคจำและเขียนโค้ดวิชา $subjectName ให้ได้ A:
-1. พิมพ์โค้ดด้วยตัวเอง ห้ามคัดลอกวาง (Copy-Paste)
-2. วาด Flowchart / Sequence Diagram ก่อนลงมือพิมพ์
-3. จำ Error ข้อความฮิต และวิธีแก้ปัญหาสนิทใจ
-4. ฝึกอธิบายตรรกะโค้ดให้เพื่อนฟังทีละบรรทัด''';
-        } else if (lowerSub.contains('math') || lowerSub.contains('calc') || lowerSub.contains('physic') || lowerSub.contains('คำนวณ')) {
+?? ???????????????????????? $subjectName ?????? A:
+1. ??????????????????? ????????????? (Copy-Paste)
+2. ??? Flowchart / Sequence Diagram ??????????????
+3. ?? Error ?????????? ?????????????????????
+4. ????????????????????????????????????????''';
+        } else if (lowerSub.contains('math') || lowerSub.contains('calc') || lowerSub.contains('physic') || lowerSub.contains('?????')) {
           _aiResponseText = '''
-💡 เทคนิคทำคะแนนวิชา $subjectName ให้ได้เกรด A:
-1. เน้นความเข้าใจที่มาของสูตร แทนการท่องจำลอยๆ
-2. แสดงวิธีทำอย่างเป็นระเบียบทีละ Step จะได้คะแนนเก็บง่าย
-3. ฝึกวาดรูป/แผนภาพประกอบโจทย์เพื่อเข้าใจภาพรวม
-4. ทำโจทย์ซ้ำข้อเดิมจนกว่าจะคิดได้โดยไม่ต้องดูเฉลย''';
+?? ????????????????? $subjectName ?????????? A:
+1. ?????????????????????????? ????????????????
+2. ?????????????????????????????? Step ??????????????????
+3. ?????????/??????????????????????????????????
+4. ???????????????????????????????????????????????''';
         } else {
           _aiResponseText = '''
-💡 เทคนิคจำเนื้อหาวิชา $subjectName ให้ได้เกรด A:
-1. ใช้ Feynman Technique อธิบายเรื่องยากให้เข้าใจง่าย
-2. ทำ Flashcard สรุปนิยามและศัพท์เฉพาะ
-3. ทบทวนเนื้อหาภายใน 24 ชม. หลังเรียนเสร็จ
-4. ใช้เทคนิค Pomodoro อ่าน 25 นาที พัก 5 นาที''';
+?? ??????????????????? $subjectName ?????????? A:
+1. ??? Feynman Technique ????????????????????????????
+2. ?? Flashcard ??????????????????????
+3. ????????????????? 24 ??. ??????????????
+4. ????????? Pomodoro ???? 25 ???? ??? 5 ????''';
         }
       }
     });
@@ -793,7 +793,7 @@ class _AIAssistantModalState extends State<AIAssistantModal> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('KMITL Gemini AI Assistant 🤖', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  const Text('KMITL Gemini AI Assistant ??', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                   IconButton(
                     icon: const Icon(Icons.close),
                     onPressed: () => Navigator.pop(context),
@@ -803,7 +803,7 @@ class _AIAssistantModalState extends State<AIAssistantModal> {
               const SizedBox(height: 12),
               TextField(
                 controller: _subjectController,
-                decoration: const InputDecoration(labelText: 'วิชาที่ต้องการถาม AI', border: OutlineInputBorder()),
+                decoration: const InputDecoration(labelText: '????????????????? AI', border: OutlineInputBorder()),
               ),
               const SizedBox(height: 14),
               Row(
@@ -812,7 +812,7 @@ class _AIAssistantModalState extends State<AIAssistantModal> {
                     child: ElevatedButton.icon(
                       onPressed: () => _callGeminiAPI('plan'),
                       icon: const Icon(Icons.calendar_month, size: 18),
-                      label: const Text('วางแผนอ่านสอบ'),
+                      label: const Text('?????????????'),
                       style: ElevatedButton.styleFrom(backgroundColor: Colors.purple, foregroundColor: Colors.white),
                     ),
                   ),
@@ -821,7 +821,7 @@ class _AIAssistantModalState extends State<AIAssistantModal> {
                     child: OutlinedButton.icon(
                       onPressed: () => _callGeminiAPI('summary'),
                       icon: const Icon(Icons.tips_and_updates, size: 18),
-                      label: const Text('สรุปเทคนิคจำ'),
+                      label: const Text('????????????'),
                     ),
                   ),
                 ],
@@ -863,7 +863,7 @@ class BuddyTab extends StatefulWidget {
 }
 
 class _BuddyTabState extends State<BuddyTab> {
-  String _filter = 'ทั้งหมด';
+  String _filter = '???????';
 
   @override
   Widget build(BuildContext context) {
@@ -879,30 +879,30 @@ class _BuddyTabState extends State<BuddyTab> {
                   icon: const Icon(Icons.arrow_back_ios, size: 20),
                   onPressed: widget.onBackToHome,
                 ),
-                const Text('🤝 ค้นหา Study Buddy', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                const Text('?? ????? Study Buddy', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               ],
             ),
             Padding(
               padding: const EdgeInsets.only(left: 48),
-              child: Text('วิชาของคุณ: ${widget.userSubject}', style: const TextStyle(fontSize: 12, color: Color(0xFFFF5722), fontWeight: FontWeight.w600)),
+              child: Text('??????????: ${widget.userSubject}', style: const TextStyle(fontSize: 12, color: Color(0xFFFF5722), fontWeight: FontWeight.w600)),
             ),
             const SizedBox(height: 16),
             Row(
               children: [
                 FilterChip(
-                  label: const Text('ทั้งหมด'),
-                  selected: _filter == 'ทั้งหมด',
-                  onSelected: (val) => setState(() => _filter = 'ทั้งหมด'),
+                  label: const Text('???????'),
+                  selected: _filter == '???????',
+                  onSelected: (val) => setState(() => _filter = '???????'),
                   selectedColor: const Color(0xFFFF5722),
-                  labelStyle: TextStyle(color: _filter == 'ทั้งหมด' ? Colors.white : Colors.black87),
+                  labelStyle: TextStyle(color: _filter == '???????' ? Colors.white : Colors.black87),
                 ),
                 const SizedBox(width: 8),
                 FilterChip(
-                  label: const Text('ตรงวิชาฉัน ✨'),
-                  selected: _filter == 'วิชาเดียวกับฉัน',
-                  onSelected: (val) => setState(() => _filter = 'วิชาเดียวกับฉัน'),
+                  label: const Text('?????????? ?'),
+                  selected: _filter == '???????????????',
+                  onSelected: (val) => setState(() => _filter = '???????????????'),
                   selectedColor: const Color(0xFFFF5722),
-                  labelStyle: TextStyle(color: _filter == 'วิชาเดียวกับฉัน' ? Colors.white : Colors.black87),
+                  labelStyle: TextStyle(color: _filter == '???????????????' ? Colors.white : Colors.black87),
                 ),
               ],
             ),
@@ -911,7 +911,7 @@ class _BuddyTabState extends State<BuddyTab> {
               child: StreamBuilder<QuerySnapshot>(
                 stream: widget.firestore.collection('users').snapshots(),
                 builder: (context, snapshot) {
-                  if (snapshot.hasError) return const Center(child: Text('เกิดข้อผิดพลาดในการโหลดข้อมูล'));
+                  if (snapshot.hasError) return const Center(child: Text('?????????????????????????????'));
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator(color: Color(0xFFFF5722)));
                   }
@@ -920,24 +920,24 @@ class _BuddyTabState extends State<BuddyTab> {
                   final filtered = docs.where((doc) {
                     final data = doc.data() as Map<String, dynamic>;
                     String subject = data['current_subject']?.toString() ?? '';
-                    if (_filter == 'วิชาเดียวกับฉัน') {
+                    if (_filter == '???????????????') {
                       return subject.toLowerCase().contains(widget.userSubject.toLowerCase());
                     }
                     return true;
                   }).toList();
 
                   if (filtered.isEmpty) {
-                    return const Center(child: Text('ไม่พบรายชื่อเพื่อนติวในระบบ'));
+                    return const Center(child: Text('???????????????????????????'));
                   }
 
                   return ListView.builder(
                     itemCount: filtered.length,
                     itemBuilder: (context, index) {
                       final item = filtered[index].data() as Map<String, dynamic>;
-                      String name = item['username']?.toString() ?? 'นักศึกษา';
-                      String avatar = item['avatar']?.toString() ?? '🎓';
-                      String faculty = item['faculty']?.toString() ?? 'ไม่ระบุคณะ';
-                      String subject = item['current_subject']?.toString() ?? 'ไม่ระบุวิชา';
+                      String name = item['username']?.toString() ?? '????????';
+                      String avatar = item['avatar']?.toString() ?? '??';
+                      String faculty = item['faculty']?.toString() ?? '??????????';
+                      String subject = item['current_subject']?.toString() ?? '???????????';
 
                       return Container(
                         margin: const EdgeInsets.only(bottom: 12),
@@ -965,7 +965,7 @@ class _BuddyTabState extends State<BuddyTab> {
                                   Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                     decoration: BoxDecoration(color: const Color(0xFFFFF0E6), borderRadius: BorderRadius.circular(6)),
-                                    child: Text('📖 $subject', style: const TextStyle(fontSize: 10, color: Color(0xFFFF5722), fontWeight: FontWeight.bold)),
+                                    child: Text('?? $subject', style: const TextStyle(fontSize: 10, color: Color(0xFFFF5722), fontWeight: FontWeight.bold)),
                                   ),
                                 ],
                               ),
@@ -981,7 +981,7 @@ class _BuddyTabState extends State<BuddyTab> {
                                 );
                               },
                               style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFFF5722)),
-                              child: const Text('ชวนติว (แชต)', style: TextStyle(fontSize: 12, color: Colors.white)),
+                              child: const Text('?????? (???)', style: TextStyle(fontSize: 12, color: Colors.white)),
                             ),
                           ],
                         ),
@@ -1020,7 +1020,7 @@ class StudyRoomTab extends StatelessWidget {
     DateTime selectedDate = DateTime.now();
     TimeOfDay selectedTime = TimeOfDay.now();
     final studyTimeCtrl = TextEditingController(
-      text: '${selectedDate.day}/${selectedDate.month}/${selectedDate.year} เวลา ${selectedTime.format(context)}',
+      text: '${selectedDate.day}/${selectedDate.month}/${selectedDate.year} ???? ${selectedTime.format(context)}',
     );
 
     showModalBottomSheet(
@@ -1038,23 +1038,23 @@ class StudyRoomTab extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('สร้างห้องติวกลุ่มใหม่ 🏫', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    const Text('????????????????????? ??', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                     IconButton(icon: const Icon(Icons.close), onPressed: () => Navigator.pop(ctx)),
                   ],
                 ),
                 const SizedBox(height: 14),
-                TextField(controller: titleCtrl, decoration: const InputDecoration(labelText: 'หัวข้อห้องติว')),
+                TextField(controller: titleCtrl, decoration: const InputDecoration(labelText: '?????????????')),
                 const SizedBox(height: 10),
-                TextField(controller: subjectCtrl, decoration: const InputDecoration(labelText: 'ชื่อวิชา')),
+                TextField(controller: subjectCtrl, decoration: const InputDecoration(labelText: '????????')),
                 const SizedBox(height: 10),
-                TextField(controller: locationCtrl, decoration: const InputDecoration(labelText: 'สถานที่นัดเจอกัน')),
+                TextField(controller: locationCtrl, decoration: const InputDecoration(labelText: '????????????????')),
                 const SizedBox(height: 10),
                 
                 TextField(
                   controller: studyTimeCtrl,
                   readOnly: true,
                   decoration: const InputDecoration(
-                    labelText: 'วัน-เวลาที่จะนัดติว',
+                    labelText: '???-???????????????',
                     suffixIcon: Icon(Icons.calendar_month, color: Color(0xFFFF5722)),
                   ),
                   onTap: () async {
@@ -1073,14 +1073,14 @@ class StudyRoomTab extends StatelessWidget {
                         setModalState(() {
                           selectedDate = d;
                           selectedTime = t;
-                          studyTimeCtrl.text = '${d.day}/${d.month}/${d.year} เวลา ${t.format(context)}';
+                          studyTimeCtrl.text = '${d.day}/${d.month}/${d.year} ???? ${t.format(context)}';
                         });
                       }
                     }
                   },
                 ),
                 const SizedBox(height: 10),
-                TextField(controller: maxMembersCtrl, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'จำนวนคนที่รับ')),
+                TextField(controller: maxMembersCtrl, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: '?????????????')),
                 const SizedBox(height: 18),
                 SizedBox(
                   width: double.infinity,
@@ -1094,7 +1094,7 @@ class StudyRoomTab extends StatelessWidget {
                         Navigator.pop(ctx);
                       }
                     },
-                    child: const Text('เปิดห้องติวเลย!', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    child: const Text('??????????????!', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                   ),
                 ),
               ],
@@ -1124,13 +1124,13 @@ class StudyRoomTab extends StatelessWidget {
                       icon: const Icon(Icons.arrow_back_ios, size: 20),
                       onPressed: onBackToHome,
                     ),
-                    const Text('🏫 Study Rooms', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                    const Text('?? Study Rooms', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                   ],
                 ),
                 ElevatedButton.icon(
                   onPressed: () => _showCreateRoomModal(context),
                   icon: const Icon(Icons.add, size: 18, color: Colors.white),
-                  label: const Text('สร้างห้อง', style: TextStyle(fontSize: 12, color: Colors.white)),
+                  label: const Text('?????????', style: TextStyle(fontSize: 12, color: Colors.white)),
                   style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFFF5722)),
                 ),
               ],
@@ -1140,13 +1140,13 @@ class StudyRoomTab extends StatelessWidget {
               child: StreamBuilder<QuerySnapshot>(
                 stream: firestore.collection('study_rooms').orderBy('created_at', descending: true).snapshots(),
                 builder: (context, snapshot) {
-                  if (snapshot.hasError) return const Center(child: Text('เกิดข้อผิดพลาดในการโหลดข้อมูลห้องติว'));
+                  if (snapshot.hasError) return const Center(child: Text('????????????????????????????????????'));
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator(color: Color(0xFFFF5722)));
                   }
 
                   final docs = snapshot.data?.docs ?? [];
-                  if (docs.isEmpty) return const Center(child: Text('ยังไม่มีห้องติวในขณะนี้ ลองกดสร้างห้องใหม่ได้เลย!'));
+                  if (docs.isEmpty) return const Center(child: Text('??????????????????????? ????????????????????????!'));
 
                   return ListView.builder(
                     itemCount: docs.length,
@@ -1177,7 +1177,7 @@ class StudyRoomTab extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Expanded(
-                                  child: Text(room['title'] ?? 'ไม่มีชื่อห้อง', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16), overflow: TextOverflow.ellipsis),
+                                  child: Text(room['title'] ?? '?????????????', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16), overflow: TextOverflow.ellipsis),
                                 ),
                                 Row(
                                   children: [
@@ -1188,7 +1188,7 @@ class StudyRoomTab extends StatelessWidget {
                                         borderRadius: BorderRadius.circular(8),
                                       ),
                                       child: Text(
-                                        '$currentMembers/$maxMembers คน',
+                                        '$currentMembers/$maxMembers ??',
                                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: isFull ? Colors.red : Colors.green[800]),
                                       ),
                                     ),
@@ -1196,7 +1196,7 @@ class StudyRoomTab extends StatelessWidget {
                                       const SizedBox(width: 6),
                                       IconButton(
                                         icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
-                                        tooltip: 'ลบห้องติว (แอดมินเจ้าของห้อง)',
+                                        tooltip: '????????? (?????????????????)',
                                         onPressed: () async {
                                           await firestore.collection('study_rooms').doc(doc.id).delete();
                                         },
@@ -1207,17 +1207,17 @@ class StudyRoomTab extends StatelessWidget {
                               ],
                             ),
                             const SizedBox(height: 6),
-                            Text('📖 วิชา: ${room['subject'] ?? ''}', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFFFF5722))),
-                            Text('📍 นัดพบ: ${room['location'] ?? ''}', style: const TextStyle(fontSize: 12, color: Colors.black87)),
-                            Text('⏰ วันเวลานัด: ${room['study_time'] ?? 'ไม่ระบุวันเวลา'}', style: const TextStyle(fontSize: 12, color: Colors.purple, fontWeight: FontWeight.bold)),
-                            Text('👤 ผู้สร้างห้อง (Host): ${room['host_name'] ?? ''}', style: const TextStyle(fontSize: 11, color: Colors.black45)),
+                            Text('?? ????: ${room['subject'] ?? ''}', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFFFF5722))),
+                            Text('?? ?????: ${room['location'] ?? ''}', style: const TextStyle(fontSize: 12, color: Colors.black87)),
+                            Text('? ??????????: ${room['study_time'] ?? '??????????????'}', style: const TextStyle(fontSize: 12, color: Colors.purple, fontWeight: FontWeight.bold)),
+                            Text('?? ???????????? (Host): ${room['host_name'] ?? ''}', style: const TextStyle(fontSize: 11, color: Colors.black45)),
                             const SizedBox(height: 12),
 
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton.icon(
                                 icon: Icon(isMember ? Icons.forum_rounded : Icons.group_add_rounded, size: 18),
-                                label: Text(isMember ? 'เข้าสู่ห้องแชตกลุ่มติว 💬' : (isFull ? 'ห้องเต็มแล้ว' : 'ขอเข้าร่วมติว (พูดคุยกลุ่ม)')),
+                                label: Text(isMember ? '?????????????????????? ??' : (isFull ? '????????????' : '????????????? (???????????)')),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: isMember ? Colors.purple : (isFull ? Colors.grey : const Color(0xFFFF5722)),
                                   foregroundColor: Colors.white,
@@ -1238,7 +1238,7 @@ class StudyRoomTab extends StatelessWidget {
                                             MaterialPageRoute(
                                               builder: (context) => GroupChatScreen(
                                                 roomId: doc.id,
-                                                roomTitle: room['title'] ?? 'ห้องติวกลุ่ม',
+                                                roomTitle: room['title'] ?? '????????????',
                                                 hostUid: room['host_uid'] ?? '',
                                               ),
                                             ),
@@ -1270,10 +1270,10 @@ class MapTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final spots = [
-      {'name': 'หอสมุดกลาง KMITL', 'facility': 'มีปลั๊กไฟทุกโต๊ะ · แอร์เย็นฉ่ำ · โซนอ่านเงียบสนิท', 'rating': '4.9 ⭐'},
-      {'name': 'สำนักบริการคอมพิวเตอร์', 'facility': 'อินเทอร์เน็ตความเร็วสูง · เครื่องคอมพิวเตอร์พร้อมใช้งาน', 'rating': '4.7 ⭐'},
-      {'name': 'โรงอาหาร HM (วิศวะ)', 'facility': 'มีร้านกาแฟ/ขนม · นั่งคุยงานกลุ่มสะดวกสบาย', 'rating': '4.5 ⭐'},
-      {'name': 'ตึกพระเทพ (IT)', 'facility': 'Co-Working Space · ปลั๊กไฟแน่น · ที่นั่งกว้างขวาง', 'rating': '4.8 ⭐'},
+      {'name': '?????????? KMITL', 'facility': '???????????????? � ??????????? � ????????????????', 'rating': '4.9 ?'},
+      {'name': '??????????????????????', 'facility': '??????????????????????? � ?????????????????????????????', 'rating': '4.7 ?'},
+      {'name': '???????? HM (?????)', 'facility': '??????????/??? � ????????????????????????', 'rating': '4.5 ?'},
+      {'name': '????????? (IT)', 'facility': 'Co-Working Space � ??????????? � ????????????????', 'rating': '4.8 ?'},
     ];
 
     return SafeArea(
@@ -1288,12 +1288,12 @@ class MapTab extends StatelessWidget {
                   icon: const Icon(Icons.arrow_back_ios, size: 20),
                   onPressed: onBackToHome,
                 ),
-                const Text('📍 พิกัดอ่านหนังสือ KMITL', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                const Text('?? ???????????????? KMITL', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               ],
             ),
             const Padding(
               padding: EdgeInsets.only(left: 48),
-              child: Text('แนะนำสถานที่อ่านหนังสือและสิ่งอำนวยความสะดวกในสถาบัน', style: TextStyle(fontSize: 12, color: Colors.black45)),
+              child: Text('????????????????????????????????????????????????????', style: TextStyle(fontSize: 12, color: Colors.black45)),
             ),
             const SizedBox(height: 16),
             Expanded(
@@ -1412,7 +1412,7 @@ class _ChatDialogState extends State<ChatDialog> {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      'แชตกับ ${widget.peerName}',
+                      '?????? ${widget.peerName}',
                       style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                     ),
                   ],
@@ -1441,7 +1441,7 @@ class _ChatDialogState extends State<ChatDialog> {
                   final docs = snapshot.data?.docs ?? [];
                   if (docs.isEmpty) {
                     return const Center(
-                      child: Text('ยังไม่มีข้อความ ทักทายเพื่อนชวนติวได้เลย! 👋', style: TextStyle(color: Colors.black45, fontSize: 12)),
+                      child: Text('??????????????? ????????????????????????! ??', style: TextStyle(color: Colors.black45, fontSize: 12)),
                     );
                   }
 
@@ -1484,7 +1484,7 @@ class _ChatDialogState extends State<ChatDialog> {
                     child: TextField(
                       controller: _msgController,
                       decoration: InputDecoration(
-                        hintText: 'พิมพ์ข้อความ...',
+                        hintText: '????????????...',
                         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
                       ),
@@ -1526,7 +1526,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
   final TextEditingController _msgController = TextEditingController();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final User? currentUser = FirebaseAuth.instance.currentUser;
-  String _myUsername = 'นักศึกษา';
+  String _myUsername = '????????';
 
   @override
   void initState() {
@@ -1539,7 +1539,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
       final doc = await _firestore.collection('users').doc(currentUser!.uid).get();
       if (doc.exists && doc.data() != null) {
         setState(() {
-          _myUsername = doc.data()!['username'] ?? 'นักศึกษา';
+          _myUsername = doc.data()!['username'] ?? '????????';
         });
       }
     }
@@ -1567,7 +1567,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('เตะ $memberName ออกจากห้องติวแล้ว')),
+        SnackBar(content: Text('??? $memberName ?????????????????')),
       );
     }
   }
@@ -1600,7 +1600,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                 final docs = snapshot.data?.docs ?? [];
                 if (docs.isEmpty) {
                   return const Center(
-                    child: Text('ยังไม่มีข้อความในกลุ่ม ทักทายเพื่อนๆ นัดวันเวลาสถานที่ได้เลย! 👋', style: TextStyle(color: Colors.black45, fontSize: 13)),
+                    child: Text('?????????????????????? ????????????? ???????????????????????! ??', style: TextStyle(color: Colors.black45, fontSize: 13)),
                   );
                 }
 
@@ -1612,7 +1612,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                     final data = docs[index].data() as Map<String, dynamic>;
                     bool isMe = data['sender_uid'] == currentUser?.uid;
                     String senderUid = data['sender_uid'] ?? '';
-                    String senderName = data['sender_name'] ?? 'เพื่อน';
+                    String senderName = data['sender_name'] ?? '??????';
 
                     return Align(
                       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
@@ -1638,7 +1638,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                                     const SizedBox(width: 6),
                                     GestureDetector(
                                       onTap: () => _kickMember(senderUid, senderName),
-                                      child: const Text(' [เตะออก]', style: TextStyle(fontSize: 10, color: Colors.red, fontWeight: FontWeight.bold)),
+                                      child: const Text(' [??????]', style: TextStyle(fontSize: 10, color: Colors.red, fontWeight: FontWeight.bold)),
                                     ),
                                   ],
                                 ],
@@ -1664,7 +1664,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                   child: TextField(
                     controller: _msgController,
                     decoration: InputDecoration(
-                      hintText: 'พิมพ์ข้อความนัดติว...',
+                      hintText: '??????????????????...',
                       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(24)),
                     ),
