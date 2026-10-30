@@ -46,10 +46,10 @@ class MyApp extends StatelessWidget {
                 // ถ้ามีผู้ใช้ค้างอยู่ในระบบ ให้ส่งชื่อผู้ใช้ไปยัง HomeScreen
                 if (authSnapshot.hasData && authSnapshot.data != null) {
                   final user = authSnapshot.data!;
-                  final userName = user.email != null 
-                      ? user.email!.split('@')[0] 
+                  final userName = user.email != null
+                      ? user.email!.split('@')[0]
                       : 'Student';
-                  
+
                   return HomeScreen(userName: userName);
                 }
 

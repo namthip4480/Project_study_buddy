@@ -36,9 +36,15 @@ class _LoginScreenState extends State<LoginScreen> {
       User? user = userCredential.user;
 
       if (user != null) {
-        final userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+        final userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
         if (!userDoc.exists) {
-          await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .set({
             'uid': user.uid,
             'username': user.displayName ?? email.split('@')[0],
             'email': email,
@@ -50,11 +56,14 @@ class _LoginScreenState extends State<LoginScreen> {
         }
 
         if (!mounted) return;
-        String nameToShow = user.displayName ?? userDoc.data()?['username'] ?? email.split('@')[0];
+        String nameToShow = user.displayName ??
+            userDoc.data()?['username'] ??
+            email.split('@')[0];
 
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => HomeScreen(userName: nameToShow)),
+          MaterialPageRoute(
+              builder: (context) => HomeScreen(userName: nameToShow)),
         );
       }
     } on FirebaseAuthException catch (e) {
@@ -79,19 +88,27 @@ class _LoginScreenState extends State<LoginScreen> {
         return;
       }
 
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
       User? user = userCredential.user;
 
       if (user != null) {
-        final userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+        final userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
         if (!userDoc.exists) {
-          await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .set({
             'uid': user.uid,
             'username': user.displayName ?? user.email!.split('@')[0],
             'email': user.email,
@@ -106,14 +123,17 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => HomeScreen(userName: user.displayName ?? 'นักศึกษา'),
+            builder: (context) =>
+                HomeScreen(userName: user.displayName ?? 'นักศึกษา'),
           ),
         );
       }
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('เกิดข้อผิดพลาดในการล็อกอินด้วย Google: $e'), backgroundColor: Colors.redAccent),
+        SnackBar(
+            content: Text('เกิดข้อผิดพลาดในการล็อกอินด้วย Google: $e'),
+            backgroundColor: Colors.redAccent),
       );
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -134,31 +154,35 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: [
                   const Text('🎓', style: TextStyle(fontSize: 64)),
                   const SizedBox(height: 12),
-                  const Text('STUDY BUDDY KMITL', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFFFF5722))),
-                  const Text('แอปค้นหาเพื่อนอ่านหนังสือ ลาดกระบัง', style: TextStyle(fontSize: 12, color: Colors.black45)),
+                  const Text('STUDY BUDDY KMITL',
+                      style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFFFF5722))),
+                  const Text('แอปค้นหาเพื่อนอ่านหนังสือ ลาดกระบัง',
+                      style: TextStyle(fontSize: 12, color: Colors.black45)),
                   const SizedBox(height: 32),
-                  
                   TextField(
                     controller: _emailController,
                     decoration: InputDecoration(
                       labelText: 'อีเมลสถาบัน (@kmitl.ac.th)',
                       prefixIcon: const Icon(Icons.email_outlined),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12)),
                     ),
                   ),
                   const SizedBox(height: 16),
-                  
                   TextField(
                     controller: _passwordController,
                     obscureText: true,
                     decoration: InputDecoration(
                       labelText: 'รหัสผ่าน',
                       prefixIcon: const Icon(Icons.lock_outline),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12)),
                     ),
                   ),
                   const SizedBox(height: 16),
-                  
                   SizedBox(
                     width: double.infinity,
                     height: 48,
@@ -166,59 +190,75 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: _isLoading ? null : _login,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFFF5722),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
                       ),
                       child: _isLoading
                           ? const CircularProgressIndicator(color: Colors.white)
-                          : const Text('เข้าสู่ระบบ', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+                          : const Text('เข้าสู่ระบบ',
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white)),
                     ),
                   ),
                   const SizedBox(height: 16),
-
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.center, // ✅ แก้ซ้ำออกเรียบร้อย
+                    mainAxisAlignment:
+                        MainAxisAlignment.center, // ✅ แก้ซ้ำออกเรียบร้อย
                     children: [
-                      const Text('ยังไม่มีบัญชีผู้ใช้งาน? ', style: TextStyle(fontSize: 13, color: Colors.black54)),
+                      const Text('ยังไม่มีบัญชีผู้ใช้งาน? ',
+                          style:
+                              TextStyle(fontSize: 13, color: Colors.black54)),
                       GestureDetector(
                         onTap: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => const RegisterScreen()),
+                            MaterialPageRoute(
+                                builder: (context) => const RegisterScreen()),
                           );
                         },
                         child: const Text(
                           'สมัครสมาชิก',
-                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFFFF5722)),
+                          style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFFFF5722)),
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 16),
-
                   Row(
                     children: const [
                       Expanded(child: Divider()),
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 12),
-                        child: Text('หรือเข้าสู่ระบบด้วย', style: TextStyle(fontSize: 12, color: Colors.black45)),
+                        child: Text('หรือเข้าสู่ระบบด้วย',
+                            style:
+                                TextStyle(fontSize: 12, color: Colors.black45)),
                       ),
                       Expanded(child: Divider()),
                     ],
                   ),
                   const SizedBox(height: 16),
-
                   SizedBox(
                     width: double.infinity,
                     height: 48,
                     child: OutlinedButton.icon(
                       onPressed: _isLoading ? null : _signInWithGoogle,
-                      icon: const Icon(Icons.g_mobiledata, color: Colors.red, size: 32),
+                      icon: const Icon(Icons.g_mobiledata,
+                          color: Colors.red, size: 32),
                       label: const Text(
                         'เข้าสู่ระบบด้วย Google KMITL',
-                        style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold, fontSize: 14),
+                        style: TextStyle(
+                            color: Colors.black87,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14),
                       ),
                       style: OutlinedButton.styleFrom(
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
                         side: const BorderSide(color: Color(0xFFE0E0E0)),
                       ),
                     ),

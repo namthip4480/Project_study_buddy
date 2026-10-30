@@ -30,7 +30,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String _avatar = '🎓';
   bool _isLoading = true;
 
-  final List<String> _avatars = ['🎓', '🦊', '🐱', '🐼', '🚀', '👾', '🍕', '🐻'];
+  final List<String> _avatars = [
+    '🎓',
+    '🦊',
+    '🐱',
+    '🐼',
+    '🚀',
+    '👾',
+    '🍕',
+    '🐻'
+  ];
   final List<String> _faculties = [
     'คณะวิศวกรรมศาสตร์',
     'คณะสถาปัตยกรรม ศิลปะและการออกแบบ',
@@ -54,7 +63,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.initState();
     _nameController = TextEditingController(text: widget.currentName);
     _subjectController = TextEditingController(text: widget.currentSubject);
-    _selectedFaculty = _faculties.contains(widget.currentFaculty) ? widget.currentFaculty : _faculties[5];
+    _selectedFaculty = _faculties.contains(widget.currentFaculty)
+        ? widget.currentFaculty
+        : _faculties[5];
     _loadProfileFromFirestore();
   }
 
@@ -62,16 +73,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       try {
-        DocumentSnapshot doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+        DocumentSnapshot doc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
         if (doc.exists && doc.data() != null) {
           final data = doc.data() as Map<String, dynamic>;
           setState(() {
-            _nameController.text = data['username']?.toString() ?? widget.currentName;
+            _nameController.text =
+                data['username']?.toString() ?? widget.currentName;
             _email = data['email']?.toString() ?? user.email ?? '';
             String fac = data['faculty']?.toString() ?? widget.currentFaculty;
             if (_faculties.contains(fac)) _selectedFaculty = fac;
             _avatar = data['avatar']?.toString() ?? '🎓';
-            _subjectController.text = data['current_subject']?.toString() ?? widget.currentSubject;
+            _subjectController.text =
+                data['current_subject']?.toString() ?? widget.currentSubject;
             _isLoading = false;
           });
           return;
@@ -102,7 +118,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('อัปเดตข้อมูลโปรไฟล์เรียบร้อยแล้ว! ✨'), backgroundColor: Colors.green),
+        const SnackBar(
+            content: Text('อัปเดตข้อมูลโปรไฟล์เรียบร้อยแล้ว! ✨'),
+            backgroundColor: Colors.green),
       );
     }
   }
@@ -119,14 +137,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator(color: Color(0xFFFF5722)));
+      return const Center(
+          child: CircularProgressIndicator(color: Color(0xFFFF5722)));
     }
 
     return SafeArea(
       child: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          const Text('👤 โปรไฟล์ส่วนตัว', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          const Text('👤 โปรไฟล์ส่วนตัว',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           const SizedBox(height: 16),
           Center(
             child: Container(
@@ -137,7 +157,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 shape: BoxShape.circle,
                 border: Border.all(color: const Color(0xFFFF5722), width: 2),
               ),
-              child: Center(child: Text(_avatar, style: const TextStyle(fontSize: 48))),
+              child: Center(
+                  child: Text(_avatar, style: const TextStyle(fontSize: 48))),
             ),
           ),
           const SizedBox(height: 12),
@@ -157,9 +178,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     margin: const EdgeInsets.symmetric(horizontal: 4),
                     padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
-                      color: isSel ? const Color(0xFFFF5722).withOpacity(0.2) : Colors.grey[100],
+                      color: isSel
+                          ? const Color(0xFFFF5722).withOpacity(0.2)
+                          : Colors.grey[100],
                       shape: BoxShape.circle,
-                      border: Border.all(color: isSel ? const Color(0xFFFF5722) : Colors.transparent),
+                      border: Border.all(
+                          color: isSel
+                              ? const Color(0xFFFF5722)
+                              : Colors.transparent),
                     ),
                     child: Text(em, style: const TextStyle(fontSize: 20)),
                   ),
@@ -173,8 +199,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             controller: _nameController,
             decoration: InputDecoration(
               labelText: 'ชื่อนักศึกษา (Display Name)',
-              prefixIcon: const Icon(Icons.person_outline, color: Color(0xFFFF5722)),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              prefixIcon:
+                  const Icon(Icons.person_outline, color: Color(0xFFFF5722)),
+              border:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             ),
           ),
           const SizedBox(height: 14),
@@ -183,11 +211,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
             value: _selectedFaculty,
             decoration: InputDecoration(
               labelText: 'คณะ / วิทยาลัย (KMITL)',
-              prefixIcon: const Icon(Icons.school_outlined, color: Color(0xFFFF5722)),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              prefixIcon:
+                  const Icon(Icons.school_outlined, color: Color(0xFFFF5722)),
+              border:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             ),
             isExpanded: true,
-            items: _faculties.map((f) => DropdownMenuItem(value: f, child: Text(f, style: const TextStyle(fontSize: 13)))).toList(),
+            items: _faculties
+                .map((f) => DropdownMenuItem(
+                    value: f,
+                    child: Text(f, style: const TextStyle(fontSize: 13))))
+                .toList(),
             onChanged: (val) {
               if (val != null) setState(() => _selectedFaculty = val);
             },
@@ -198,19 +232,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
             controller: _subjectController,
             decoration: InputDecoration(
               labelText: 'วิชาหลักที่กำลังเน้นอ่าน',
-              prefixIcon: const Icon(Icons.menu_book_outlined, color: Color(0xFFFF5722)),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              prefixIcon: const Icon(Icons.menu_book_outlined,
+                  color: Color(0xFFFF5722)),
+              border:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             ),
           ),
           const SizedBox(height: 20),
 
           Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: ListTile(
-                leading: const Icon(Icons.email_outlined, color: Color(0xFFFF5722)),
-                title: const Text('อีเมลสถาบัน', style: TextStyle(fontSize: 12, color: Colors.black54)),
+                leading:
+                    const Icon(Icons.email_outlined, color: Color(0xFFFF5722)),
+                title: const Text('อีเมลสถาบัน',
+                    style: TextStyle(fontSize: 12, color: Colors.black54)),
                 subtitle: Text(_email, style: const TextStyle(fontSize: 14)),
               ),
             ),
@@ -222,8 +261,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
             height: 48,
             child: ElevatedButton(
               onPressed: _updateProfileData,
-              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFFF5722)),
-              child: const Text('บันทึกการเปลี่ยนแปลง', style: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold)),
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFFF5722)),
+              child: const Text('บันทึกการเปลี่ยนแปลง',
+                  style: TextStyle(
+                      fontSize: 15,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold)),
             ),
           ),
           const SizedBox(height: 12),
@@ -234,8 +278,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: OutlinedButton.icon(
               onPressed: _logout,
               icon: const Icon(Icons.logout, color: Colors.redAccent),
-              label: const Text('ออกจากระบบ', style: TextStyle(fontSize: 15, color: Colors.redAccent, fontWeight: FontWeight.bold)),
-              style: OutlinedButton.styleFrom(side: const BorderSide(color: Colors.redAccent)),
+              label: const Text('ออกจากระบบ',
+                  style: TextStyle(
+                      fontSize: 15,
+                      color: Colors.redAccent,
+                      fontWeight: FontWeight.bold)),
+              style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: Colors.redAccent)),
             ),
           ),
         ],
